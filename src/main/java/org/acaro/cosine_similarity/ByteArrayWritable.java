@@ -11,6 +11,14 @@ implements Writable {
 	
 	private byte[] data;
 	
+	public ByteArrayWritable(byte[] data) {
+		set(data);
+	}
+	
+	public void set(byte[] data) {
+		this.data = data;
+	}
+	
 	public void readFields(DataInput in) 
 	throws IOException {
 		
