@@ -1,0 +1,29 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>org.acaro.cosine_similarity</groupId>
+	<artifactId>cosine_similarity</artifactId>
+	<packaging>jar</packaging>
+	<version>1.0-SNAPSHOT</version>
+	<name>cosine_similarity</name>
+	<url>http://maven.apache.org</url>
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>com.github.maven-hadoop.plugin</groupId>
+				<artifactId>maven-hadoop-plugin</artifactId>
+				<version>0.20.1</version>
+				<configuration>
+					<hadoopHome>/opt/hadoop/hadoop-0.20.204.0/</hadoopHome>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
+	<dependencies>
+		<dependency>
+			<groupId>org.apache.hadoop</groupId>
+			<artifactId>hadoop-core</artifactId>
+			<version>0.20.204.0</version>
+		</dependency>
+	</dependencies>
+</project>
