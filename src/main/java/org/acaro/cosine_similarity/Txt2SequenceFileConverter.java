@@ -61,6 +61,8 @@ public class Txt2SequenceFileConverter {
 				dos.writeDouble(0);
 			}
 			dos.close();
+			vectorMap.clear();
+
 			Text key = new Text(id);
 			ByteArrayWritable value = new ByteArrayWritable(bos.toByteArray());
 			writer.append(key, value);
