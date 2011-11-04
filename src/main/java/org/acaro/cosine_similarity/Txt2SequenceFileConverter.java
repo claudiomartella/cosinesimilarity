@@ -46,10 +46,10 @@ public class Txt2SequenceFileConverter {
 				}
 			}
 			Float[] vector = new Float[vectorMap.size()];
-			Float[] f = vectorMap.values().toArray(vector);
+			vectorMap.values().toArray(vector);
 
 			if (!hasOnlyZeros) {
-				double norm = norm(f);
+				double norm = norm(vector);
 				
 				dos.writeDouble(norm);
 				for (int k : vectorMap.keySet()) {
@@ -68,13 +68,15 @@ public class Txt2SequenceFileConverter {
 			writer.append(key, value);
 		}
 		writer.close();
+		br.close();
 	}
 
 	// return the inner product of this vector
 	public static double dot(Float[] vector) {
 		double sum = 0.0;
 		for (int i = 0; i < vector.length; i++)
-			sum += (vector[i] * vector[i]);
+			if (vector[i] != 0)
+				sum += (vector[i] * vector[i]);
 		return sum;
 	}
 
@@ -85,7 +87,7 @@ public class Txt2SequenceFileConverter {
 	
 	public static void main(String[] args) throws IOException {
 		
-		if (args.length !=2) {
+		if (args.length != 2) {
 			System.out.println("Usage: Txt2SequenceFileConverter <input file> <outputfile>");
 			System.exit(-1);
 		}
