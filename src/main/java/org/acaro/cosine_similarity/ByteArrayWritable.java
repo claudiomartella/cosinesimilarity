@@ -11,6 +11,8 @@ implements Writable {
 	
 	private byte[] data;
 	
+	public ByteArrayWritable() { }
+	
 	public ByteArrayWritable(byte[] data) {
 		set(data);
 	}
