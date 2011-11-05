@@ -20,13 +20,10 @@ import org.apache.hadoop.mapreduce.Mapper;
 import org.apache.hadoop.mapreduce.lib.input.SequenceFileInputFormat;
 import org.apache.hadoop.mapreduce.lib.map.MultithreadedMapper;
 import org.apache.hadoop.mapreduce.lib.output.TextOutputFormat;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class CosineSimilarityCalculator 
 	extends Mapper<Text, ByteArrayWritable, NullWritable, Text> {
 
-	private static final Logger LOG = LoggerFactory.getLogger(CosineSimilarityCalculator.class);
 	private static final String MODELSDIR  = "cosineSimilarity.modelsDir";
 	private static final long MEGABYTES    = 1024*1024;
 	private List<NamedObject<List<NamedObject<byte[]>>>> files =
@@ -98,7 +95,7 @@ public class CosineSimilarityCalculator
 	public void setup(Context context)
 		throws IOException, InterruptedException {
 			
-			LOG.debug("setup() called!");
+			System.out.println("setup() called");
 		
 			Configuration conf = context.getConfiguration();
 			FileSystem fs = FileSystem.get(conf);
