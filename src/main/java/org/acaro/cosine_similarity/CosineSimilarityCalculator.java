@@ -95,8 +95,6 @@ public class CosineSimilarityCalculator
 	public void setup(Context context)
 		throws IOException, InterruptedException {
 			
-			System.out.println("setup() called");
-		
 			Configuration conf = context.getConfiguration();
 			FileSystem fs = FileSystem.get(conf);
 			
