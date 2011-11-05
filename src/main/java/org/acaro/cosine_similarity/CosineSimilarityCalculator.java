@@ -175,7 +175,7 @@ public class CosineSimilarityCalculator
          * For each input split, there will be a separate map task.
          * Here each split is of size 32 MB
          */
-        SequenceFileInputFormat.setMinInputSplitSize(job, 32 * MEGABYTES);
+        //SequenceFileInputFormat.setMinInputSplitSize(job, 32 * MEGABYTES);
         SequenceFileInputFormat.setMaxInputSplitSize(job, 32 * MEGABYTES);
 
         // Set the jar file to run
