@@ -7,6 +7,8 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.net.URI;
 import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
 
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.FileSystem;
@@ -17,7 +19,7 @@ import org.apache.hadoop.io.Text;
 
 public class Txt2SequenceFileConverter {
 
-	public static void serialize(String inFile, String outfile) throws IOException {
+	public static void serialize(String infile, String outfile) throws IOException {
 		
 		Configuration conf = new Configuration();
 		FileSystem fs = FileSystem.get(URI.create(outfile), conf);
@@ -25,9 +27,10 @@ public class Txt2SequenceFileConverter {
 
 		Writer writer = SequenceFile.createWriter(fs, conf, p, Text.class, ByteArrayWritable.class);
 		
-		BufferedReader br = new BufferedReader(new FileReader(inFile));
+		BufferedReader br = new BufferedReader(new FileReader(infile));
 		
 		HashMap<Integer, Float> vectorMap = new HashMap<Integer, Float>();
+		List<Integer> keysList = new LinkedList<Integer>();
 		String line;
 		while ((line = br.readLine()) != null) {
 			
@@ -35,13 +38,13 @@ public class Txt2SequenceFileConverter {
 			DataOutputStream dos      = new DataOutputStream(bos);
 			String[] fields = line.split("\t+");
 			String id = fields[0];
+
 			boolean hasOnlyZeros = true;
 			for (int i = 1; i < fields.length; i++) {
-
 				float val = Float.parseFloat(fields[i]);
-				//System.out.println(val);
 				if (val != 0) {
 					vectorMap.put(i, val);
+					keysList.add(i);
 					hasOnlyZeros = false;
 				}
 			}
@@ -52,9 +55,12 @@ public class Txt2SequenceFileConverter {
 				double norm = norm(vector);
 				
 				dos.writeDouble(norm);
-				for (int k : vectorMap.keySet()) {
+				for (int k : keysList) {
+					
+					float v = vectorMap.get(k);
+					
 					dos.writeInt(k);
-					dos.writeFloat(vectorMap.get(k));
+					dos.writeFloat(v);
 				}
 			} 
 			else {
@@ -62,6 +68,7 @@ public class Txt2SequenceFileConverter {
 			}
 			dos.close();
 			vectorMap.clear();
+			keysList.clear();
 
 			Text key = new Text(id);
 			ByteArrayWritable value = new ByteArrayWritable(bos.toByteArray());
@@ -88,7 +95,7 @@ public class Txt2SequenceFileConverter {
 	public static void main(String[] args) throws IOException {
 		
 		if (args.length != 2) {
-			System.out.println("Usage: Txt2SequenceFileConverter <input file> <outputfile>");
+			System.out.println("Usage: Txt2SequenceFileConverter <input file> <output file>");
 			System.exit(-1);
 		}
 		

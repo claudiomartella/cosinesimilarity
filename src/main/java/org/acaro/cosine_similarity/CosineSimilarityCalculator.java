@@ -11,26 +11,29 @@ import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.FileStatus;
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
-import org.apache.hadoop.io.BytesWritable;
 import org.apache.hadoop.io.NullWritable;
 import org.apache.hadoop.io.SequenceFile;
 import org.apache.hadoop.io.SequenceFile.Reader;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Job;
+import org.apache.hadoop.mapreduce.Mapper;
 import org.apache.hadoop.mapreduce.lib.input.SequenceFileInputFormat;
 import org.apache.hadoop.mapreduce.lib.map.MultithreadedMapper;
 import org.apache.hadoop.mapreduce.lib.output.TextOutputFormat;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class CosineSimilarityCalculator 
-	extends MultithreadedMapper<Text, BytesWritable, NullWritable, Text> {
+	extends Mapper<Text, ByteArrayWritable, NullWritable, Text> {
 
+	private static final Logger LOG = LoggerFactory.getLogger(CosineSimilarityCalculator.class);
 	private static final String MODELSDIR  = "cosineSimilarity.modelsDir";
 	private static final long MEGABYTES    = 1024*1024;
 	private List<NamedObject<List<NamedObject<byte[]>>>> files =
 			new LinkedList<NamedObject<List<NamedObject<byte[]>>>>();
 	
 	@Override
-	public void map(Text key, BytesWritable value, Context context) 
+	public void map(Text key, ByteArrayWritable value, Context context) 
 		throws IOException, InterruptedException {
 
 		ByteBuffer valueBB = ByteBuffer.wrap(value.getBytes());
@@ -42,9 +45,10 @@ public class CosineSimilarityCalculator
 			for (NamedObject<byte[]> vector: vectors) {
 
 				ByteBuffer entryBB = ByteBuffer.wrap(vector.getData());
+				valueBB.clear();
 				double cosine = calculateCosineSimilarity(entryBB, valueBB);
 
-				StringBuffer sb = new StringBuffer();
+				StringBuilder sb = new StringBuilder();
 				sb.append(filename)
 				  .append(": ")
 				  .append(key.toString())
@@ -94,6 +98,8 @@ public class CosineSimilarityCalculator
 	public void setup(Context context)
 		throws IOException, InterruptedException {
 			
+			LOG.debug("setup() called!");
+		
 			Configuration conf = context.getConfiguration();
 			FileSystem fs = FileSystem.get(conf);
 			
@@ -128,7 +134,7 @@ public class CosineSimilarityCalculator
 		System.exit(-1);
 	}
 	
-	public static int main(String[] args) 
+	public static void main(String[] args) 
 		throws IOException, InterruptedException, ClassNotFoundException {
 		
 		if (args.length < 4)
@@ -195,7 +201,5 @@ public class CosineSimilarityCalculator
         } else {
         	System.out.println("Job Failed!!!");
         }
-
-        return exitCode;
 	}
 }
