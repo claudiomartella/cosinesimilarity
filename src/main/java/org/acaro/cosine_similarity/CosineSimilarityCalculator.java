@@ -127,17 +127,15 @@ public class CosineSimilarityCalculator
 	}
 	
 	private static void printUsage() {
-		System.out.println("CosineSimilarityCalculator <input path> <output path> <models dir> #threads");
+		System.out.println("CosineSimilarityCalculator <input path> <output path> <models dir>");
 		System.exit(-1);
 	}
 	
 	public static void main(String[] args) 
 		throws IOException, InterruptedException, ClassNotFoundException {
 		
-		if (args.length < 4)
+		if (args.length < 3)
 			printUsage();
-		
-		int numOfThreads = Integer.parseInt(args[3]);
 		
         Configuration conf = new Configuration();
 
@@ -148,7 +146,6 @@ public class CosineSimilarityCalculator
         conf.addResource("mapred-site.xml");
         
         conf.set(MODELSDIR, args[2]);
-        conf.set("mapreduce.map.tasks", "1");
         
         Job job = new Job(conf);
         job.setJobName("CosineSimilarityCalculator");
@@ -159,9 +156,7 @@ public class CosineSimilarityCalculator
         job.setOutputKeyClass(NullWritable.class);
         job.setOutputValueClass(Text.class);
 
-        job.setMapperClass(MultithreadedMapper.class);
-        MultithreadedMapper.setMapperClass(job, CosineSimilarityCalculator.class);
-        MultithreadedMapper.setNumberOfThreads(job, numOfThreads);
+        job.setMapperClass(CosineSimilarityCalculator.class);
 
         // map-only job
         job.setNumReduceTasks(0);
