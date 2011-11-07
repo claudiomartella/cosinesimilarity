@@ -13,6 +13,7 @@ import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.io.NullWritable;
 import org.apache.hadoop.io.SequenceFile;
+import org.apache.hadoop.io.SequenceFile.CompressionType;
 import org.apache.hadoop.io.SequenceFile.Reader;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Job;
@@ -144,10 +145,13 @@ public class CosineSimilarityCalculator
         conf.addResource("mapred-site.xml");
         
         conf.set(MODELSDIR, args[2]);
+        conf.set("mapred.compress.map.output", "true");
+        conf.set("mapred.output.compression.type", CompressionType.BLOCK.toString());
+        conf.set("mapred.map.output.compression.codec", "org.apache.hadoop.io.compress.GzipCodec");
         
         Job job = new Job(conf);
         job.setJobName("CosineSimilarityCalculator");
-
+        
         job.setMapOutputKeyClass(NullWritable.class);
         job.setMapOutputValueClass(Text.class);
 
@@ -174,7 +178,7 @@ public class CosineSimilarityCalculator
          * Here each split is of size 32 MB
          */
         //SequenceFileInputFormat.setMinInputSplitSize(job, 32 * MEGABYTES);
-        SequenceFileInputFormat.setMaxInputSplitSize(job, 32 * MEGABYTES);
+        SequenceFileInputFormat.setMaxInputSplitSize(job, 16 * MEGABYTES);
 
         // Set the jar file to run
         job.setJarByClass(CosineSimilarityCalculator.class);
