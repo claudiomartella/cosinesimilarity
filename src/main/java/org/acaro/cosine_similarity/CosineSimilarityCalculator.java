@@ -37,10 +37,11 @@ public class CosineSimilarityCalculator
 		throws IOException, InterruptedException {
 
 		ByteBuffer valueBB = ByteBuffer.wrap(value.getBytes());
+		String keyString   = key.toString();
 		
 		for (NamedObject<List<NamedObject<byte[]>>> file: files) {
 			
-			String filename                   = file.getName();
+			//String filename                   = file.getName();
 			List<NamedObject<byte[]>> vectors = file.getData();
 			for (NamedObject<byte[]> vector: vectors) {
 
@@ -49,12 +50,10 @@ public class CosineSimilarityCalculator
 				double cosine = calculateCosineSimilarity(entryBB, valueBB);
 
 				StringBuilder sb = new StringBuilder();
-				sb.append(filename)
-				  .append(": ")
-				  .append(key.toString())
-				  .append("->")
+				sb.append(keyString)
+				  .append("\t")
 				  .append(vector.getName())
-				  .append(" ")
+				  .append("\t")
 				  .append(cosine);
 				
 				// TODO: output like Eva's script
