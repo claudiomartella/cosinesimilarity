@@ -16,6 +16,8 @@ import org.apache.hadoop.io.SequenceFile;
 import org.apache.hadoop.io.SequenceFile.CompressionType;
 import org.apache.hadoop.io.SequenceFile.Reader;
 import org.apache.hadoop.io.Text;
+import org.apache.hadoop.io.compress.CompressionCodec;
+import org.apache.hadoop.io.compress.GzipCodec;
 import org.apache.hadoop.mapreduce.Job;
 import org.apache.hadoop.mapreduce.Mapper;
 import org.apache.hadoop.mapreduce.lib.input.SequenceFileInputFormat;
@@ -145,9 +147,6 @@ public class CosineSimilarityCalculator
         conf.addResource("mapred-site.xml");
         
         conf.set(MODELSDIR, args[2]);
-        conf.set("mapred.compress.map.output", "true");
-        conf.set("mapred.output.compression.type", CompressionType.BLOCK.toString());
-        conf.set("mapred.map.output.compression.codec", "org.apache.hadoop.io.compress.GzipCodec");
         
         Job job = new Job(conf);
         job.setJobName("CosineSimilarityCalculator");
@@ -171,6 +170,8 @@ public class CosineSimilarityCalculator
         SequenceFileInputFormat.setInputPaths(job, args[0]);
         // Set the output path
         TextOutputFormat.setOutputPath(job, new Path(args[1]));
+        TextOutputFormat.setCompressOutput(job, true);
+        TextOutputFormat.setOutputCompressorClass(job, GzipCodec.class);
 
         /* Set the minimum and maximum split sizes
          * This parameter helps to specify the number of map tasks.
